@@ -4,6 +4,7 @@ import com.example.smart_hospital.entities.Utente;
 import com.example.smart_hospital.enums.Role;
 import com.example.smart_hospital.repositories.UtenteRepository;
 import com.example.smart_hospital.requests.PazienteRequest;
+import com.example.smart_hospital.responses.MedicoResponse;
 import com.example.smart_hospital.responses.PazienteResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ public class PazienteService {
     private UtenteRepository utenteRepository;
     @Autowired
     private VisitaService visitaService;
+    @Autowired
+    private MedicoService medicoService;
 
     private PazienteResponse convertToPazienteResponse(Utente utente) {
         if (utente.getRole() != Role.PAZIENTE) {
@@ -89,7 +92,7 @@ public class PazienteService {
         return convertToPazienteResponse(updatedUtente);
     }
 
-    public List<Utente> findSpecialisti(String specializzazione) {
-        return utenteRepository.findByRoleAndSpecializzazione(Role.MEDICO, specializzazione);
+    public List<MedicoResponse> findSpecialisti(String specializzazione) {
+        return medicoService.findSpecialisti(specializzazione);
     }
 }

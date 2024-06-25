@@ -2,6 +2,7 @@ package com.example.smart_hospital.controllers;
 
 import com.example.smart_hospital.entities.Utente;
 import com.example.smart_hospital.requests.PazienteRequest;
+import com.example.smart_hospital.responses.MedicoResponse;
 import com.example.smart_hospital.responses.PazienteResponse;
 import com.example.smart_hospital.services.PazienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,11 @@ public class PazienteController {
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/get/{specializzazione}")
+    public List<MedicoResponse> findSpecialisti(@PathVariable String specializzazione) {
+        return pazienteService.findSpecialisti(specializzazione);
     }
 }
 

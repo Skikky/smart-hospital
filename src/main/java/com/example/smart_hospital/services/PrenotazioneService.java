@@ -5,6 +5,7 @@ import com.example.smart_hospital.entities.Utente;
 import com.example.smart_hospital.entities.Visita;
 import com.example.smart_hospital.repositories.PrenotazioneRepository;
 import com.example.smart_hospital.repositories.VisitaRepository;
+import com.example.smart_hospital.requests.PazienteRequest;
 import com.example.smart_hospital.requests.PrenotazioneRequest;
 import com.example.smart_hospital.responses.PrenotazioneResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,26 @@ public class PrenotazioneService {
     public PrenotazioneResponse prenotaVisita(PrenotazioneRequest prenotazioneRequest) {
         Utente paziente = pazienteService.getPazienteById(prenotazioneRequest.getIdPaziente());
         Visita visita = visitaRepository.getReferenceById(prenotazioneRequest.getIdVisita());
+
+        if (prenotazioneRequest.getDataPrenotazione().isBefore(visita.getInizioDisponibilita()) ||
+                prenotazioneRequest.getDataPrenotazione().isAfter(visita.getFineDisponibilita())) {
+            throw new IllegalArgumentException("La data di prenotazione deve essere tra l'inizio e la fine della disponibilità.");
+        }
+
+        if (paziente.getSaldo() < visita.getPrezzo()) {
+            throw new IllegalArgumentException("Il saldo del paziente è insufficiente per prenotare questa visita.");
+        }
+
+        paziente.setSaldo(paziente.getSaldo() - visita.getPrezzo());
+
+        PazienteRequest pazienteRequest = PazienteRequest.builder()
+                .nome(paziente.getNome())
+                .cognome(paziente.getCognome())
+                .codiceFiscale(paziente.getCodiceFiscale())
+                .saldo(paziente.getSaldo())
+                .build();
+
+        pazienteService.updatePaziente(paziente.getId(), pazienteRequest);
 
         Prenotazione prenotazione = Prenotazione.builder()
                 .paziente(paziente)

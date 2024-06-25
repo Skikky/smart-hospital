@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class VisitaRequest {
-    private LocalDateTime dataOra;
-    private double prezzo;
+    private LocalDateTime inizioDisponibilita;
+    private LocalDateTime fineDisponibilita;
+    private Double prezzo;
     private Long idMedico;
 }

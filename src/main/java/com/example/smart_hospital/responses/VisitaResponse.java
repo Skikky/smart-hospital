@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 @Builder
 public class VisitaResponse {
     private Long id;
-    private LocalDateTime dataOra;
+    private LocalDateTime inizioDisponibilita;
+    private LocalDateTime fineDisponibilita;
     private Double prezzo;
     private Long idPaziente;
     private Long idMedico;

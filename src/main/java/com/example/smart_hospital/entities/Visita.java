@@ -2,6 +2,7 @@ package com.example.smart_hospital.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Check;
 
 import java.time.LocalDateTime;
 
@@ -12,12 +13,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Check(constraints = "fine_disponibilita > inizio_disponibilita")
 public class Visita {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private LocalDateTime dataOra;
+    private LocalDateTime inizioDisponibilita;
+
+    @Column(nullable = false)
+    private LocalDateTime fineDisponibilita;
     @Column(nullable = false)
     private Double prezzo;
 

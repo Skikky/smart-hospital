@@ -89,5 +89,12 @@ public class MedicoService {
         utenteRepository.deleteById(id);
     }
 
+    public List<MedicoResponse> findSpecialisti(String specializzazione) {
+        List<Utente> medici = utenteRepository.findBySpecializzazione(specializzazione);
+        return medici.stream()
+                .filter(utente -> utente.getSpecializzazione() != null)
+                .map(this::convertToMedicoResponse)
+                .collect(Collectors.toList());
+    }
 }
 

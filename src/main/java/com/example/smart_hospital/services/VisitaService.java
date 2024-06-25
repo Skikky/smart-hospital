@@ -23,7 +23,8 @@ public class VisitaService {
     private VisitaResponse convertToVisitaResponse(Visita visita) {
         return VisitaResponse.builder()
                 .id(visita.getId())
-                .dataOra(visita.getDataOra())
+                .inizioDisponibilita(visita.getInizioDisponibilita())
+                .fineDisponibilita(visita.getFineDisponibilita())
                 .prezzo(visita.getPrezzo())
                 .idPaziente(visita.getPaziente() != null ? visita.getPaziente().getId() : null)
                 .idMedico(visita.getMedico().getId())
@@ -50,7 +51,8 @@ public class VisitaService {
         Utente medico = medicoService.getMedicoById(visitaRequest.getIdMedico());
 
         Visita visita = Visita.builder()
-                .dataOra(visitaRequest.getDataOra())
+                .inizioDisponibilita(visitaRequest.getInizioDisponibilita())
+                .fineDisponibilita(visitaRequest.getFineDisponibilita())
                 .prezzo(visitaRequest.getPrezzo())
                 .medico(medico)
                 .paziente(null)
@@ -65,7 +67,8 @@ public class VisitaService {
 
         Utente medico = medicoService.getMedicoById(newVisita.getIdMedico());
 
-        oldVisita.setDataOra(newVisita.getDataOra());
+        oldVisita.setInizioDisponibilita(newVisita.getInizioDisponibilita());
+        oldVisita.setFineDisponibilita(newVisita.getFineDisponibilita());
         oldVisita.setPrezzo(newVisita.getPrezzo());
         oldVisita.setMedico(medico);
 
