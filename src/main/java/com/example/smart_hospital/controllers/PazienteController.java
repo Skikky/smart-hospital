@@ -24,18 +24,13 @@ public class PazienteController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<PazienteResponse> getPazienteById(@PathVariable Long id) {
+    public ResponseEntity<PazienteResponse> getPazienteResponseById(@PathVariable Long id) {
         try {
             PazienteResponse paziente = pazienteService.getPazienteResponseById(id);
             return ResponseEntity.ok(paziente);
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(null);
         }
-    }
-
-    @PostMapping("/create")
-    public PazienteResponse createPaziente(@RequestBody PazienteRequest pazienteRequest) {
-        return pazienteService.createPaziente(pazienteRequest);
     }
 
     @PutMapping("/update/{id}")
@@ -58,7 +53,7 @@ public class PazienteController {
         }
     }
 
-    @GetMapping("/get/{specializzazione}")
+    @GetMapping("/find-specialisti/{specializzazione}")
     public List<MedicoResponse> findSpecialisti(@PathVariable String specializzazione) {
         return pazienteService.findSpecialisti(specializzazione);
     }

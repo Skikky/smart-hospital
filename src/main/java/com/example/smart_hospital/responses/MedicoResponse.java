@@ -15,4 +15,6 @@ public class MedicoResponse {
     private String codiceFiscale;
     private Role role;
     private String specializzazione;
+    private String email;
+    private String password;
 }

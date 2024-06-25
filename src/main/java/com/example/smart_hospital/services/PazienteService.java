@@ -18,8 +18,6 @@ public class PazienteService {
     private UtenteRepository utenteRepository;
     @Autowired
     private VisitaService visitaService;
-    @Autowired
-    private MedicoService medicoService;
 
     private PazienteResponse convertToPazienteResponse(Utente utente) {
         if (utente.getRole() != Role.PAZIENTE) {
@@ -31,7 +29,25 @@ public class PazienteService {
                 .cognome(utente.getCognome())
                 .codiceFiscale(utente.getCodiceFiscale())
                 .role(utente.getRole())
+                .email(utente.getEmail())
+                .password(utente.getPassword())
                 .saldo(utente.getSaldo())
+                .build();
+    }
+
+    private MedicoResponse convertToMedicoResponse(Utente utente) {
+        if (utente.getRole() != Role.MEDICO) {
+            throw new IllegalArgumentException("L'utente non è un medico");
+        }
+        return MedicoResponse.builder()
+                .id(utente.getId())
+                .nome(utente.getNome())
+                .cognome(utente.getCognome())
+                .codiceFiscale(utente.getCodiceFiscale())
+                .role(utente.getRole())
+                .email(utente.getEmail())
+                .password(utente.getPassword())
+                .specializzazione(utente.getSpecializzazione())
                 .build();
     }
 
@@ -62,19 +78,6 @@ public class PazienteService {
         return convertToPazienteResponse(utente);
     }
 
-    public PazienteResponse createPaziente(PazienteRequest pazienteRequest) {
-        Utente utente = Utente.builder()
-                .nome(pazienteRequest.getNome())
-                .cognome(pazienteRequest.getCognome())
-                .codiceFiscale(pazienteRequest.getCodiceFiscale())
-                .saldo(pazienteRequest.getSaldo())
-                .role(Role.PAZIENTE)
-                .build();
-
-        Utente savedUtente = utenteRepository.saveAndFlush(utente);
-        return convertToPazienteResponse(savedUtente);
-    }
-
     public void deletePazienteById(Long id) {
         getPazienteById(id);
         utenteRepository.deleteById(id);
@@ -93,6 +96,10 @@ public class PazienteService {
     }
 
     public List<MedicoResponse> findSpecialisti(String specializzazione) {
-        return medicoService.findSpecialisti(specializzazione);
+        List<Utente> medici = utenteRepository.findBySpecializzazione(specializzazione);
+        return medici.stream()
+                .filter(utente -> utente.getSpecializzazione() != null)
+                .map(this::convertToMedicoResponse)
+                .collect(Collectors.toList());
     }
 }

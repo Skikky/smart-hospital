@@ -1,6 +1,5 @@
 package com.example.smart_hospital.controllers;
 
-import com.example.smart_hospital.entities.Utente;
 import com.example.smart_hospital.requests.MedicoRequest;
 import com.example.smart_hospital.responses.MedicoResponse;
 import com.example.smart_hospital.services.MedicoService;
@@ -17,6 +16,7 @@ public class MedicoController {
     @Autowired
     private MedicoService medicoService;
 
+
     @GetMapping("/all")
     public List<MedicoResponse> getAllMedici() {
         return medicoService.getAllMedici();
@@ -30,11 +30,6 @@ public class MedicoController {
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(null);
         }
-    }
-
-    @PostMapping("/create")
-    public MedicoResponse createMedico(@RequestBody MedicoRequest medicoRequest) {
-        return medicoService.createMedico(medicoRequest);
     }
 
     @PutMapping("/update/{id}")

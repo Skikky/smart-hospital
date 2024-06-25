@@ -99,7 +99,7 @@ public class VisitaController {
         return visitaService.trovaVisiteTerminatePerPaziente(paziente);
     }
 
-    @PutMapping("/upload_referto/{id}")
+    @PutMapping("/upload-referto/{id}")
     public ResponseEntity<?> uploadReferto(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         try {
             // Controllo il tipo di file
@@ -113,7 +113,7 @@ public class VisitaController {
         }
     }
 
-    @GetMapping("/download_referto/{id}")
+    @GetMapping("/download-referto/{id}")
     public ResponseEntity<GenericResponse> downloadreferto(@PathVariable Long id, HttpServletResponse response) throws IOException {
         String pathFile = visitaService.getPath(id);
         Path filePath = Path.of(pathFile);

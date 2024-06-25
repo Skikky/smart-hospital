@@ -29,6 +29,8 @@ public class MedicoService {
                 .cognome(utente.getCognome())
                 .codiceFiscale(utente.getCodiceFiscale())
                 .role(utente.getRole())
+                .email(utente.getEmail())
+                .password(utente.getPassword())
                 .specializzazione(utente.getSpecializzazione())
                 .build();
     }
@@ -60,20 +62,6 @@ public class MedicoService {
         return convertToMedicoResponse(utente);
     }
 
-    public MedicoResponse createMedico(MedicoRequest medicoRequest) {
-        Utente utente = Utente.builder()
-                .nome(medicoRequest.getNome())
-                .cognome(medicoRequest.getCognome())
-                .codiceFiscale(medicoRequest.getCodiceFiscale())
-                .specializzazione(medicoRequest.getSpecializzazione())
-                .role(Role.MEDICO)
-                .saldo(null)
-                .build();
-
-        Utente savedUtente = utenteRepository.saveAndFlush(utente);
-        return convertToMedicoResponse(savedUtente);
-    }
-
     public MedicoResponse updateMedico(Long id, MedicoRequest newMedico) {
         Utente oldMedico = getMedicoById(id);
 
@@ -89,14 +77,6 @@ public class MedicoService {
     public void deleteMedicoById(Long id) {
         getMedicoById(id);
         utenteRepository.deleteById(id);
-    }
-
-    public List<MedicoResponse> findSpecialisti(String specializzazione) {
-        List<Utente> medici = utenteRepository.findBySpecializzazione(specializzazione);
-        return medici.stream()
-                .filter(utente -> utente.getSpecializzazione() != null)
-                .map(this::convertToMedicoResponse)
-                .collect(Collectors.toList());
     }
 }
 

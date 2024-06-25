@@ -12,4 +12,6 @@ public class MedicoRequest {
     private String cognome;
     private String codiceFiscale;
     private String specializzazione;
+    private String email;
+    private String password;
 }

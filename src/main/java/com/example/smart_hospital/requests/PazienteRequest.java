@@ -11,5 +11,7 @@ public class PazienteRequest {
     private String nome;
     private String cognome;
     private String codiceFiscale;
-    private double saldo;
+    private Double saldo;
+    private String email;
+    private String password;
 }
