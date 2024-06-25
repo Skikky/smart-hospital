@@ -124,7 +124,7 @@ public class VisitaController {
     }
 
     @GetMapping("/download-referto/{id}")
-    public ResponseEntity<GenericResponse> downloadreferto(@PathVariable Long id, HttpServletResponse response) throws IOException {
+    public ResponseEntity<GenericResponse> downloadReferto(@PathVariable Long id, HttpServletResponse response) throws IOException {
         String pathFile = visitaService.getPath(id);
         Path filePath = Path.of(pathFile);
         String mimeType = Files.probeContentType(filePath);
