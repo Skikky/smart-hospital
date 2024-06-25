@@ -7,7 +7,12 @@ import com.example.smart_hospital.requests.VisitaRequest;
 import com.example.smart_hospital.responses.VisitaResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +30,7 @@ public class VisitaService {
                 .id(visita.getId())
                 .inizioDisponibilita(visita.getInizioDisponibilita())
                 .fineDisponibilita(visita.getFineDisponibilita())
+                .isTerminata(visita.getIsTerminata())
                 .prezzo(visita.getPrezzo())
                 .idPaziente(visita.getPaziente() != null ? visita.getPaziente().getId() : null)
                 .idMedico(visita.getMedico().getId())
@@ -56,6 +62,7 @@ public class VisitaService {
                 .prezzo(visitaRequest.getPrezzo())
                 .medico(medico)
                 .paziente(null)
+                .isTerminata(false)
                 .build();
 
         Visita savedVisita = visitaRepository.saveAndFlush(visita);
@@ -94,5 +101,44 @@ public class VisitaService {
     public List<VisitaResponse> trovaVisitePerPaziente(Utente paziente) {
         List<Visita> visite = visitaRepository.findByPaziente(paziente);
         return visite.stream().map(this::convertToVisitaResponse).collect(Collectors.toList());
+    }
+
+    public List<VisitaResponse> trovaVisiteNonTerminatePerPaziente(Utente paziente) {
+        List<Visita> visite = visitaRepository.findByPazienteAndIsTerminata(paziente, false);
+        return visite.stream().map(this::convertToVisitaResponse).collect(Collectors.toList());
+    }
+
+    public List<VisitaResponse> trovaVisiteTerminatePerPaziente(Utente paziente) {
+        List<Visita> visite = visitaRepository.findByPazienteAndIsTerminata(paziente, true);
+        return visite.stream().map(this::convertToVisitaResponse).collect(Collectors.toList());
+    }
+
+    public void uploadReferto(Long id, MultipartFile file) throws IOException {
+        Visita visita = getVisitaById(id);
+
+        if (visita.getPaziente() == null) {
+            throw new IllegalStateException("Non è possibile caricare un referto per una visita senza paziente.");
+        }
+
+        String existingFilePath = visita.getReferto();
+        if (existingFilePath != null && !existingFilePath.isEmpty()) {
+            Path existingFile = Paths.get(existingFilePath);
+            if (Files.exists(existingFile)) {
+                Files.delete(existingFile);
+            }
+        }
+
+        String filename = file.getOriginalFilename();
+        Path filePath = Paths.get("src/main/resources/documents/" +id+ "_" + filename);
+
+        Files.copy(file.getInputStream(), filePath);
+
+        visita.setReferto(filePath.toString());
+        visita.setIsTerminata(true);
+        visitaRepository.saveAndFlush(visita);
+    }
+
+    public String getPath(Long id) {
+        return visitaRepository.getFilePath(id);
     }
 }

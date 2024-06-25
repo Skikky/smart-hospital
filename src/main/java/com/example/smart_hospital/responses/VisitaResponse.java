@@ -16,4 +16,5 @@ public class VisitaResponse {
     private Double prezzo;
     private Long idPaziente;
     private Long idMedico;
+    private Boolean isTerminata;
 }

@@ -33,5 +33,9 @@ public class Visita {
     @ManyToOne(optional = false)
     @JoinColumn(name = "medico_id", nullable = false)
     private Utente medico;
+    @Column
+    private String referto;
+    @Column(nullable = false)
+    private Boolean isTerminata;
 }
 
