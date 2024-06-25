@@ -2,6 +2,7 @@ package com.example.smart_hospital.controllers;
 
 import com.example.smart_hospital.entities.Utente;
 import com.example.smart_hospital.requests.MedicoRequest;
+import com.example.smart_hospital.responses.MedicoResponse;
 import com.example.smart_hospital.services.MedicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +18,14 @@ public class MedicoController {
     private MedicoService medicoService;
 
     @GetMapping("/all")
-    public List<Utente> getAllMedici() {
+    public List<MedicoResponse> getAllMedici() {
         return medicoService.getAllMedici();
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Utente> getMedicoById(@PathVariable Long id) {
+    public ResponseEntity<MedicoResponse> getMedicoResponseById(@PathVariable Long id) {
         try {
-            Utente medico = medicoService.getMedicoById(id);
+            MedicoResponse medico = medicoService.getMedicoResponseById(id);
             return ResponseEntity.ok(medico);
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(null);
@@ -32,14 +33,14 @@ public class MedicoController {
     }
 
     @PostMapping("/create")
-    public Utente createMedico(@RequestBody MedicoRequest medicoRequest) {
+    public MedicoResponse createMedico(@RequestBody MedicoRequest medicoRequest) {
         return medicoService.createMedico(medicoRequest);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Utente> updateMedico(@PathVariable Long id, @RequestBody MedicoRequest medicoRequest) {
+    public ResponseEntity<MedicoResponse> updateMedico(@PathVariable Long id, @RequestBody MedicoRequest medicoRequest) {
         try {
-            Utente medico = medicoService.updateMedico(id, medicoRequest);
+            MedicoResponse medico = medicoService.updateMedico(id, medicoRequest);
             return ResponseEntity.ok(medico);
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(null);

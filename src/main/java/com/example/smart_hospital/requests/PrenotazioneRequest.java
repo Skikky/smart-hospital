@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-public class PrenotaVisitaRequest {
-    private LocalDateTime dataOra;
-    private double prezzo;
-    private Long idMedico;
+public class PrenotazioneRequest {
+    private Long idPaziente;
+    private Long idVisita;
+    private LocalDateTime dataPrenotazione;
 }

@@ -3,12 +3,13 @@ package com.example.smart_hospital.services;
 import com.example.smart_hospital.entities.Utente;
 import com.example.smart_hospital.entities.Visita;
 import com.example.smart_hospital.repositories.VisitaRepository;
-import com.example.smart_hospital.requests.PrenotaVisitaRequest;
 import com.example.smart_hospital.requests.VisitaRequest;
+import com.example.smart_hospital.responses.VisitaResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class VisitaService {
@@ -17,13 +18,21 @@ public class VisitaService {
     private VisitaRepository visitaRepository;
 
     @Autowired
-    private PazienteService pazienteService;
-
-    @Autowired
     private MedicoService medicoService;
 
-    public List<Visita> getAllVisite() {
-        return visitaRepository.findAll();
+    private VisitaResponse convertToVisitaResponse(Visita visita) {
+        return VisitaResponse.builder()
+                .id(visita.getId())
+                .dataOra(visita.getDataOra())
+                .prezzo(visita.getPrezzo())
+                .idPaziente(visita.getPaziente() != null ? visita.getPaziente().getId() : null)
+                .idMedico(visita.getMedico().getId())
+                .build();
+    }
+
+    public List<VisitaResponse> getAllVisite() {
+        List<Visita> visite = visitaRepository.findAll();
+        return visite.stream().map(this::convertToVisitaResponse).collect(Collectors.toList());
     }
 
     public Visita getVisitaById(Long id) {
@@ -31,38 +40,56 @@ public class VisitaService {
                 .orElseThrow(() -> new IllegalArgumentException("Visita con id " + id + " non trovata"));
     }
 
-    public Visita createVisita(Long pazienteId, PrenotaVisitaRequest visitaRequest) {
-        Utente medico = medicoService.getMedicoById(visitaRequest.getIdMedico());
-
-        Utente paziente = pazienteService.getPazienteById(pazienteId);
-        Visita visita = Visita.builder()
-                .dataOra(visitaRequest.getDataOra())
-                .prezzo(0)
-                .paziente(paziente)
-                .medico(medico)
-                .referto(null)
-                .build();
-
-        return visitaRepository.saveAndFlush(visita);
+    public VisitaResponse getVisitaResponseById(Long id) {
+        Visita visita = visitaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Visita con id " + id + " non trovata"));
+        return convertToVisitaResponse(visita);
     }
 
-    public Visita updateVisita(Long id, VisitaRequest newVisita) {
-        Visita oldVisita = getVisitaById(id);
+    public VisitaResponse createVisita(VisitaRequest visitaRequest) {
+        Utente medico = medicoService.getMedicoById(visitaRequest.getIdMedico());
 
-        Utente paziente = pazienteService.getPazienteById(newVisita.getIdPaziente());
+        Visita visita = Visita.builder()
+                .dataOra(visitaRequest.getDataOra())
+                .prezzo(visitaRequest.getPrezzo())
+                .medico(medico)
+                .paziente(null)
+                .build();
+
+        Visita savedVisita = visitaRepository.saveAndFlush(visita);
+        return convertToVisitaResponse(savedVisita);
+    }
+
+    public VisitaResponse updateVisita(Long id, VisitaRequest newVisita) {
+        Visita oldVisita = getVisitaById(id);
 
         Utente medico = medicoService.getMedicoById(newVisita.getIdMedico());
 
         oldVisita.setDataOra(newVisita.getDataOra());
         oldVisita.setPrezzo(newVisita.getPrezzo());
-        oldVisita.setPaziente(paziente);
         oldVisita.setMedico(medico);
 
-        return visitaRepository.saveAndFlush(oldVisita);
+        Visita updatedVisita = visitaRepository.saveAndFlush(oldVisita);
+        return convertToVisitaResponse(updatedVisita);
     }
 
     public void deleteVisitaById(Long id) {
         getVisitaById(id);
         visitaRepository.deleteById(id);
+    }
+
+    public List<VisitaResponse> trovaVisitePerMedico(Utente medico) {
+        List<Visita> visite = visitaRepository.findByMedico(medico);
+        return visite.stream().map(this::convertToVisitaResponse).collect(Collectors.toList());
+    }
+
+    public List<VisitaResponse> trovaVisiteDisponibili() {
+        List<Visita> visite = visitaRepository.findByPazienteIsNull();
+        return visite.stream().map(this::convertToVisitaResponse).collect(Collectors.toList());
+    }
+
+    public List<VisitaResponse> trovaVisitePerPaziente(Utente paziente) {
+        List<Visita> visite = visitaRepository.findByPaziente(paziente);
+        return visite.stream().map(this::convertToVisitaResponse).collect(Collectors.toList());
     }
 }

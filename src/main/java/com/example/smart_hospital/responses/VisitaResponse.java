@@ -1,4 +1,4 @@
-package com.example.smart_hospital.requests;
+package com.example.smart_hospital.responses;
 
 import lombok.*;
 
@@ -9,8 +9,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-public class VisitaRequest {
+public class VisitaResponse {
+    private Long id;
     private LocalDateTime dataOra;
-    private double prezzo;
+    private Double prezzo;
+    private Long idPaziente;
     private Long idMedico;
 }

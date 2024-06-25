@@ -6,26 +6,27 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "visita")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Visita {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private LocalDateTime dataOra;
-    private double prezzo;
+    @Column(nullable = false)
+    private Double prezzo;
 
     @ManyToOne
     @JoinColumn(name = "paziente_id")
     private Utente paziente;
 
-    @ManyToOne
-    @JoinColumn(name = "medico_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "medico_id", nullable = false)
     private Utente medico;
-
-    // aggiungi il file per il referto
 }
 

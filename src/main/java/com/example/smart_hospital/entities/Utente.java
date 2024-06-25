@@ -5,15 +5,14 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Check;
 
-import java.util.List;
-
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "utente")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@Check(constraints = "(ruolo != 'MEDICO' OR saldo IS NULL) AND (ruolo != 'PAZIENTE' OR specializzazione IS NULL)")
+@Check(constraints = "(role != 'MEDICO' OR saldo IS NULL) AND (role != 'PAZIENTE' OR specializzazione IS NULL)")
 public class Utente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,18 +26,12 @@ public class Utente {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role ruolo;
+    private Role role;
 
     @Column
     @Check(constraints = "saldo >= 0")
-    private double saldo;
+    private Double saldo;
 
     @Column
     private String specializzazione;
-
-    @OneToMany(mappedBy = "paziente")
-    private List<Visita> visitePaziente;
-
-    @OneToMany(mappedBy = "medico")
-    private List<Visita> visiteMedico;
 }

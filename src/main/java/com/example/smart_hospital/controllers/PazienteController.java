@@ -2,6 +2,7 @@ package com.example.smart_hospital.controllers;
 
 import com.example.smart_hospital.entities.Utente;
 import com.example.smart_hospital.requests.PazienteRequest;
+import com.example.smart_hospital.responses.PazienteResponse;
 import com.example.smart_hospital.services.PazienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +18,14 @@ public class PazienteController {
     private PazienteService pazienteService;
 
     @GetMapping("/all")
-    public List<Utente> getAllPazienti() {
+    public List<PazienteResponse> getAllPazienti() {
         return pazienteService.getAllPazienti();
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Utente> getPazienteById(@PathVariable Long id) {
+    public ResponseEntity<PazienteResponse> getPazienteById(@PathVariable Long id) {
         try {
-            Utente paziente = pazienteService.getPazienteById(id);
+            PazienteResponse paziente = pazienteService.getPazienteResponseById(id);
             return ResponseEntity.ok(paziente);
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(null);
@@ -32,14 +33,14 @@ public class PazienteController {
     }
 
     @PostMapping("/create")
-    public Utente createPaziente(@RequestBody PazienteRequest pazienteRequest) {
+    public PazienteResponse createPaziente(@RequestBody PazienteRequest pazienteRequest) {
         return pazienteService.createPaziente(pazienteRequest);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Utente> updatePaziente(@PathVariable Long id, @RequestBody PazienteRequest pazienteRequest) {
+    public ResponseEntity<PazienteResponse> updatePaziente(@PathVariable Long id, @RequestBody PazienteRequest pazienteRequest) {
         try {
-            Utente paziente = pazienteService.updatePaziente(id, pazienteRequest);
+            PazienteResponse paziente = pazienteService.updatePaziente(id, pazienteRequest);
             return ResponseEntity.ok(paziente);
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(null);
