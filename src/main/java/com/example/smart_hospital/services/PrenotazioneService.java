@@ -10,7 +10,9 @@ import com.example.smart_hospital.requests.PrenotazioneRequest;
 import com.example.smart_hospital.responses.PrenotazioneResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,17 +34,31 @@ public class PrenotazioneService {
                 .build();
     }
 
+    @Transactional
     public PrenotazioneResponse prenotaVisita(PrenotazioneRequest prenotazioneRequest) {
         Utente paziente = pazienteService.getPazienteById(prenotazioneRequest.getIdPaziente());
         Visita visita = visitaRepository.getReferenceById(prenotazioneRequest.getIdVisita());
 
-        if (prenotazioneRequest.getDataPrenotazione().isBefore(visita.getInizioDisponibilita()) ||
-                prenotazioneRequest.getDataPrenotazione().isAfter(visita.getFineDisponibilita())) {
+        LocalDateTime dataPrenotazione = prenotazioneRequest.getDataPrenotazione();
+        LocalDateTime finePrenotazione = dataPrenotazione.plusMinutes(visita.getDurata());
+
+        if (dataPrenotazione.isBefore(visita.getInizioDisponibilita()) || finePrenotazione.isAfter(visita.getFineDisponibilita())) {
             throw new IllegalArgumentException("La data di prenotazione deve essere tra l'inizio e la fine della disponibilità.");
         }
 
         if (paziente.getSaldo() < visita.getPrezzo()) {
             throw new IllegalArgumentException("Il saldo del paziente è insufficiente per prenotare questa visita.");
+        }
+
+        // Verifica se c'è già una prenotazione che si sovrappone a quella richiesta
+        List<Prenotazione> prenotazioniEsistenti = prenotazioneRepository.findByVisita(visita);
+        for (Prenotazione prenotazione : prenotazioniEsistenti) {
+            LocalDateTime inizioPrenotazioneEsistente = prenotazione.getDataPrenotazione();
+            LocalDateTime finePrenotazioneEsistente = inizioPrenotazioneEsistente.plusHours(visita.getDurata());
+
+            if ((dataPrenotazione.isBefore(finePrenotazioneEsistente) && finePrenotazione.isAfter(inizioPrenotazioneEsistente))) {
+                throw new IllegalArgumentException("Esiste già una prenotazione per questa visita che si sovrappone alla data specificata.");
+            }
         }
 
         paziente.setSaldo(paziente.getSaldo() - visita.getPrezzo());
@@ -59,7 +75,7 @@ public class PrenotazioneService {
         Prenotazione prenotazione = Prenotazione.builder()
                 .paziente(paziente)
                 .visita(visita)
-                .dataPrenotazione(prenotazioneRequest.getDataPrenotazione())
+                .dataPrenotazione(dataPrenotazione)
                 .build();
 
         visita.setPaziente(paziente);

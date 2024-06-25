@@ -32,6 +32,7 @@ public class VisitaService {
                 .fineDisponibilita(visita.getFineDisponibilita())
                 .isTerminata(visita.getIsTerminata())
                 .prezzo(visita.getPrezzo())
+                .durata(visita.getDurata())
                 .idPaziente(visita.getPaziente() != null ? visita.getPaziente().getId() : null)
                 .idMedico(visita.getMedico().getId())
                 .build();
@@ -61,6 +62,7 @@ public class VisitaService {
                 .fineDisponibilita(visitaRequest.getFineDisponibilita())
                 .prezzo(visitaRequest.getPrezzo())
                 .medico(medico)
+                .durata(visitaRequest.getDurata())
                 .paziente(null)
                 .isTerminata(false)
                 .build();
@@ -77,6 +79,7 @@ public class VisitaService {
         oldVisita.setInizioDisponibilita(newVisita.getInizioDisponibilita());
         oldVisita.setFineDisponibilita(newVisita.getFineDisponibilita());
         oldVisita.setPrezzo(newVisita.getPrezzo());
+        oldVisita.setDurata(newVisita.getDurata());
         oldVisita.setMedico(medico);
 
         Visita updatedVisita = visitaRepository.saveAndFlush(oldVisita);

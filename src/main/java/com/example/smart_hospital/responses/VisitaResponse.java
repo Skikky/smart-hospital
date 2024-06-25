@@ -17,4 +17,5 @@ public class VisitaResponse {
     private Long idPaziente;
     private Long idMedico;
     private Boolean isTerminata;
+    private int durata;
 }

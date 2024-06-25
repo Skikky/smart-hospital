@@ -37,5 +37,7 @@ public class Visita {
     private String referto;
     @Column(nullable = false)
     private Boolean isTerminata;
+    @Column(nullable = false)
+    private int durata;
 }
 

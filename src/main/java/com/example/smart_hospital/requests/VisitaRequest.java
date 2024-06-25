@@ -14,4 +14,5 @@ public class VisitaRequest {
     private LocalDateTime fineDisponibilita;
     private Double prezzo;
     private Long idMedico;
+    private int durata;
 }
