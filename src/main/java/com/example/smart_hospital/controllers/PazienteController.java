@@ -7,11 +7,13 @@ import com.example.smart_hospital.responses.PazienteResponse;
 import com.example.smart_hospital.services.PazienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@Secured({"ADMIN","MEDICO","PAZIENTE"})
 @RequestMapping("/paziente")
 public class PazienteController {
 
@@ -33,6 +35,7 @@ public class PazienteController {
         }
     }
 
+    @Secured({"ADMIN","PAZIENTE"})
     @PutMapping("/update/{id}")
     public ResponseEntity<PazienteResponse> updatePaziente(@PathVariable Long id, @RequestBody PazienteRequest pazienteRequest) {
         try {
@@ -43,6 +46,7 @@ public class PazienteController {
         }
     }
 
+    @Secured({"ADMIN","PAZIENTE"})
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deletePaziente(@PathVariable Long id) {
         try {

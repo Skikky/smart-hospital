@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
+@Secured({"ADMIN","MEDICO","PAZIENTE"})
 @RequestMapping("/visita")
 public class VisitaController {
 
@@ -41,11 +43,13 @@ public class VisitaController {
         }
     }
 
+    @Secured({"ADMIN","MEDICO"})
     @PostMapping("/create")
     public VisitaResponse createVisita(@RequestBody VisitaRequest visitaRequest) {
         return visitaService.createVisita(visitaRequest);
     }
 
+    @Secured({"ADMIN","MEDICO"})
     @PutMapping("/update/{id}")
     public ResponseEntity<VisitaResponse> updateVisita(@PathVariable Long id, @RequestBody VisitaRequest visitaRequest) {
         try {
@@ -56,6 +60,7 @@ public class VisitaController {
         }
     }
 
+    @Secured({"ADMIN","MEDICO"})
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteVisita(@PathVariable Long id) {
         try {
@@ -66,6 +71,7 @@ public class VisitaController {
         }
     }
 
+    @Secured({"ADMIN","MEDICO"})
     @GetMapping("/medico/{idMedico}")
     public List<VisitaResponse> trovaVisitePerMedico(@PathVariable Long idMedico) {
         Utente medico = new Utente();
@@ -78,6 +84,7 @@ public class VisitaController {
         return visitaService.trovaVisiteDisponibili();
     }
 
+    @Secured({"ADMIN","PAZIENTE"})
     @GetMapping("/paziente/{idPaziente}")
     public List<VisitaResponse> trovaVisitePerPaziente(@PathVariable Long idPaziente) {
         Utente paziente = new Utente();
@@ -85,6 +92,7 @@ public class VisitaController {
         return visitaService.trovaVisitePerPaziente(paziente);
     }
 
+    @Secured({"ADMIN","PAZIENTE"})
     @GetMapping("/non-terminate/{idPaziente}")
     public List<VisitaResponse> trovaVisiteNonTerminatePerPaziente(@PathVariable Long idPaziente) {
         Utente paziente = new Utente();
@@ -92,6 +100,7 @@ public class VisitaController {
         return visitaService.trovaVisiteNonTerminatePerPaziente(paziente);
     }
 
+    @Secured({"ADMIN","PAZIENTE"})
     @GetMapping("/terminate/{idPaziente}")
     public List<VisitaResponse> trovaVisiteTerminatePerPaziente(@PathVariable Long idPaziente) {
         Utente paziente = new Utente();
@@ -99,6 +108,7 @@ public class VisitaController {
         return visitaService.trovaVisiteTerminatePerPaziente(paziente);
     }
 
+    @Secured({"ADMIN","MEDICO"})
     @PutMapping("/upload-referto/{id}")
     public ResponseEntity<?> uploadReferto(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         try {

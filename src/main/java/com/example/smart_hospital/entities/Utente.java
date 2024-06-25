@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Check(constraints = "(saldo IS NULL OR saldo >= 0) AND (saldo IS NULL OR specializzazione IS NULL)")
+@Check(constraints = "(saldo IS NULL OR saldo >= 0)")
 public class Utente implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -4,14 +4,15 @@ package com.example.smart_hospital.security;
 import com.example.smart_hospital.entities.TokenBlackList;
 import com.example.smart_hospital.entities.Utente;
 import com.example.smart_hospital.enums.Role;
-import com.example.smart_hospital.exceptions.InvalidRoleException;
-import com.example.smart_hospital.exceptions.UserNotConfirmedException;
+import com.example.smart_hospital.exceptions.*;
 import com.example.smart_hospital.repositories.UtenteRepository;
 import com.example.smart_hospital.requests.AuthenticationRequest;
+import com.example.smart_hospital.requests.ChangePasswordRequest;
 import com.example.smart_hospital.requests.RegistrationRequest;
 import com.example.smart_hospital.requests.UserDTO;
 import com.example.smart_hospital.responses.AuthenticationResponse;
 import com.example.smart_hospital.services.EmailService;
+import com.example.smart_hospital.services.PasswordValidationService;
 import com.example.smart_hospital.services.TokenBlackListService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -39,6 +40,8 @@ public class AuthenticationService {
     private TokenBlackListService tokenBlackListService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private PasswordValidationService passwordValidationService;
 
     @Transactional
     public AuthenticationResponse register(RegistrationRequest registrationRequest) throws InvalidRoleException {
@@ -126,5 +129,46 @@ public class AuthenticationService {
             return true;
         }
         return false;
+    }
+
+    public void cambiaPassword(ChangePasswordRequest request) throws EntityNotFoundException, PasswordDeboleException, PasswordUgualiException, PasswordSbagliataException {
+        Utente utente = utenteRepository.findById(request.getIdUtente())
+                .orElseThrow(() -> new EntityNotFoundException(request.getIdUtente(), "Utente"));
+        if (!passwordEncoder.matches(request.getOldPassword(), utente.getPassword())) {
+            throw new PasswordSbagliataException();
+        }
+        if (passwordEncoder.matches(request.getNewPassword(), utente.getPassword())) {
+            throw new PasswordUgualiException();
+        }
+        if (!passwordValidationService.isPasswordValid(request.getNewPassword())) {
+            throw new PasswordDeboleException();
+        }
+        utente.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        utenteRepository.saveAndFlush(utente);
+    }
+
+    public void passwordDimenticata(String email, String newPassword) throws PasswordDeboleException {
+        Utente utente = utenteRepository.findUtenteByEmail(email);
+
+        if (utente == null) {
+            throw new IllegalArgumentException("Utente non trovato com questa email");
+        }
+        if (!passwordValidationService.isPasswordValid(newPassword)) {
+            throw new PasswordDeboleException();
+        }
+
+        sendResetPasswordEmail(email,newPassword);
+    }
+
+    protected void resetPassword(String email, String newPassword) {
+        Utente utente = utenteRepository.findUtenteByEmail(email);
+        utente.setPassword(passwordEncoder.encode(newPassword));
+        utenteRepository.saveAndFlush(utente);
+    }
+
+    private void sendResetPasswordEmail(String email,String password) {
+        String url = "http://localhost:8080/auth/reset?email="+ email+"&newPassword=" +password;
+        String text = "Clicca per resettare la password: " + url;
+        emailService.sendEmail(email, "Reset", text);
     }
 }
