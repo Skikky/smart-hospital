@@ -14,7 +14,7 @@ public interface VisitaRepository extends JpaRepository<Visita, Long> {
     List<Visita> findByPaziente(Utente paziente);
     List<Visita> findByMedico(Utente medico);
     List<Visita> findByPazienteIsNull();
-    @Query(value = "SELECT referto FROM visita WHERE id =:id_visita", nativeQuery = true)
+    @Query(value = "SELECT \"referto\" FROM \"visita\" WHERE \"id\" = :id_visita", nativeQuery = true)
     String getFilePath(@Param("id_visita") Long id_visita);
     List<Visita> findByPazienteAndIsTerminata(Utente paziente, boolean isTerminata);
 }

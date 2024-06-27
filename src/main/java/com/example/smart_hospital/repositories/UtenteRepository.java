@@ -13,6 +13,6 @@ import java.util.List;
 public interface UtenteRepository extends JpaRepository<Utente, Long> {
     List<Utente> findByRole(Role role);
     List<Utente> findBySpecializzazione(String specializzazione);
-    @Query(value = "SELECT * FROM utente u WHERE u.email = :email", nativeQuery = true)
+    @Query(value = "SELECT * FROM \"Utente\" u WHERE u.\"email\" = :email", nativeQuery = true)
     Utente findUtenteByEmail(@Param("email") String email);
 }
