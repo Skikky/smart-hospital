@@ -24,8 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.EnumSet;
-
 @Service
 public class AuthenticationService {
     @Autowired
@@ -87,7 +85,7 @@ public class AuthenticationService {
                 authenticationRequest.getEmail(),
                 authenticationRequest.getPassword()
         ));
-        var user = utenteRepository.findUtenteByEmail(authenticationRequest.getEmail());
+        var user = utenteRepository.findByEmail(authenticationRequest.getEmail());
         if (user.getRole().equals(Role.GUEST)) {
             throw new UserNotConfirmedException();
         }
@@ -95,7 +93,7 @@ public class AuthenticationService {
         if (tokenBlackListService.tokenNotValidFromUtenteById(user.getId()).contains(jwtToken)) {
             String email = jwtService.extractUsername(jwtToken);
             // Carica l'utente dal database
-            UserDetails userDetails = utenteRepository.findUtenteByEmail(email);
+            UserDetails userDetails = utenteRepository.findByEmail(email);
 
             // Genera un nuovo token con le informazioni aggiornate
             String newToken = jwtService.generateToken(userDetails);
@@ -148,7 +146,7 @@ public class AuthenticationService {
     }
 
     public void passwordDimenticata(String email, String newPassword) throws PasswordDeboleException {
-        Utente utente = utenteRepository.findUtenteByEmail(email);
+        Utente utente = utenteRepository.findByEmail(email);
 
         if (utente == null) {
             throw new IllegalArgumentException("Utente non trovato com questa email");
@@ -161,7 +159,7 @@ public class AuthenticationService {
     }
 
     protected void resetPassword(String email, String newPassword) {
-        Utente utente = utenteRepository.findUtenteByEmail(email);
+        Utente utente = utenteRepository.findByEmail(email);
         utente.setPassword(passwordEncoder.encode(newPassword));
         utenteRepository.saveAndFlush(utente);
     }

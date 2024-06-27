@@ -142,6 +142,6 @@ public class VisitaService {
     }
 
     public String getPath(Long id) {
-        return visitaRepository.getFilePath(id);
+        return visitaRepository.findRefertoById(id);
     }
 }
