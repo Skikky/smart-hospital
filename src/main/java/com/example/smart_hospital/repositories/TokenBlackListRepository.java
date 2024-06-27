@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface TokenBlackListRepository extends JpaRepository<TokenBlackList, Long> {
 
-    @Query(value = "SELECT * FROM \"Token_Black_List\" WHERE \"Utente_Id\" = :utente_id", nativeQuery = true)
-    List<TokenBlackList> getTokenBlackListFromUtenteId(@Param("utente_id") Long utente_id);
+    @Query("SELECT t FROM TokenBlackList t WHERE t.utente.id = :utenteId")
+    List<TokenBlackList> getTokenBlackListFromUtenteId(@Param("utenteId") Long utenteId);
 }

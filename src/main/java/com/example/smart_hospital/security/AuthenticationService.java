@@ -75,7 +75,7 @@ public class AuthenticationService {
     }
 
     private void sendConfirmationEmail(UserDTO utente) {
-        String url = "http://localhost:8080/auth/confirm?id=" + utente.getId() + "&token=" + utente.getRegistrationToken() + "&role=" + utente.getDesiredRole();
+        String url = "http://localhost:8088/auth/confirm?id=" + utente.getId() + "&token=" + utente.getRegistrationToken() + "&role=" + utente.getDesiredRole();
         String text = "Clicca per confermare la registrazione: " + url;
         emailService.sendEmail(utente.getEmail(), "Conferma", text);
     }
