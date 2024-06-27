@@ -1,6 +1,5 @@
 package com.example.smart_hospital.controllers;
 
-import com.example.smart_hospital.entities.Utente;
 import com.example.smart_hospital.requests.PazienteRequest;
 import com.example.smart_hospital.responses.MedicoResponse;
 import com.example.smart_hospital.responses.PazienteResponse;
