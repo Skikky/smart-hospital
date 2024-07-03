@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres             #----> docker pull postgres    (docker run)
+    container_name: postgres-sql       #----> --name postgres-sql
+    environment:
+      POSTGRES_USER: username          #----> -e POSTGRES_USER=username
+      POSTGRES_PASSWORD: mypassword    #----> -e POSTGRES_PASSWORD=mypassword
+      POSTGRES_DB: smarthospital             #----> -e POSTGRES_DB=smarthospital
+    ports:
+      - "5432:5432"                    #----> -p "5432:5432"
+    volumes:
+      - /var/lib/postgresql/data   #----> -v /var/lib/postgresql/data
+
+
+  spring-boot-app:
+    image: smart-hospital-spring
+    depends_on:
+      - postgres
+    ports:
+      - "8088:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-sql:5432/smarthospital
+      SPRING_DATASOURCE_USERNAME: username
+      SPRING_DATASOURCE_PASSWORD: mypassword
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create
+
+volumes:
+  postgres_data:
+
+
