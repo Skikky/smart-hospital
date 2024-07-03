@@ -1,0 +1,31 @@
+./mvnw clean package
+
+docker run --name postgres-sql -p 5432:5432 -d -e POSTGRES_PASSWORD=mypassword -e POSTGRES_USER=username -e POSTGRES_DB=smarthospital -v \var\lib\postgres\data postgres
+
+docker build -t smart-hospital-spring .
+
+docker network ls
+docker network create smart-hospital-net
+docker network connect smart-hospital-net postgres-sql
+docker run --name main -p 8088:8080 --net smart-hospital-net smart-hospital-spring
+
+
+docker-compose
+
+# Naviga alla directory del tuo progetto
+cd /path/to/your/docker-compose-directory
+
+# Costruisci l'immagine Docker per l'applicazione Spring Boot (se necessario)
+docker build -t smart-hospital-spring-compose .
+
+# Avvia i container definiti in docker-compose.yml
+docker-compose up -d
+
+# Verifica che i container siano in esecuzione
+docker-compose ps
+
+# Visualizza i log dei container
+docker-compose logs -f
+
+# Interrompi e rimuovi i container
+docker-compose down
